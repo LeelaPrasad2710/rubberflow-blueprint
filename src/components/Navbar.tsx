@@ -24,6 +24,12 @@ const Navbar = () => {
             <Link to="/quote" className="text-foreground hover:text-primary transition-colors font-medium">
               Get Quote
             </Link>
+            <Link to="/dashboard" className="text-foreground hover:text-primary transition-colors font-medium">
+              Dashboard
+            </Link>
+            <Link to="/admin" className="text-foreground hover:text-primary transition-colors font-medium">
+              Admin
+            </Link>
             
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <a href="tel:8951513146" className="flex items-center space-x-1 hover:text-primary transition-colors">
