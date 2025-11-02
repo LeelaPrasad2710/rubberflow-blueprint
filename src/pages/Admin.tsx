@@ -1,34 +1,37 @@
 import { ClipboardList, DollarSign, FileText, Factory } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Admin = () => {
+  const navigate = useNavigate();
+  
   const adminModules = [
     {
       title: "Attendance Tracker",
       description: "Manage employee attendance and track working hours",
       icon: ClipboardList,
-      action: () => console.log("Attendance Tracker clicked"),
+      path: "/admin/attendance",
     },
     {
       title: "Salaries",
       description: "Process payroll and generate salary slips",
       icon: DollarSign,
-      action: () => console.log("Salaries clicked"),
+      path: "/admin/salaries",
     },
     {
       title: "Invoice Generator",
       description: "Create and manage customer invoices with GST",
       icon: FileText,
-      action: () => console.log("Invoice Generator clicked"),
+      path: "/admin/invoices",
     },
     {
       title: "Production",
       description: "Track production batches and manage workflow",
       icon: Factory,
-      action: () => console.log("Production clicked"),
+      path: "/admin/production",
     },
   ];
 
@@ -61,7 +64,7 @@ const Admin = () => {
                       <Button 
                         variant="default" 
                         className="w-full"
-                        onClick={module.action}
+                        onClick={() => navigate(module.path)}
                       >
                         Open {module.title}
                       </Button>

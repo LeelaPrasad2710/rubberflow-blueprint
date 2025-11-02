@@ -8,6 +8,7 @@ import Portfolio from "./pages/Portfolio";
 import Quote from "./pages/Quote";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
+import InProgress from "./pages/InProgress";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,10 @@ const App = () => (
           <Route path="/quote" element={<Quote />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/attendance" element={<InProgress />} />
+          <Route path="/admin/salaries" element={<InProgress />} />
+          <Route path="/admin/invoices" element={<InProgress />} />
+          <Route path="/admin/production" element={<InProgress />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
