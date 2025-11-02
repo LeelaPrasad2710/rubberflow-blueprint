@@ -21,9 +21,6 @@ const Navbar = () => {
             <Link to="/portfolio" className="text-foreground hover:text-primary transition-colors font-medium">
               Products
             </Link>
-            <Link to="/quote" className="text-foreground hover:text-primary transition-colors font-medium">
-              Get Quote
-            </Link>
             <Link to="/dashboard" className="text-foreground hover:text-primary transition-colors font-medium">
               Dashboard
             </Link>
@@ -32,9 +29,9 @@ const Navbar = () => {
             </Link>
             
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <a href="tel:8951513146" className="flex items-center space-x-1 hover:text-primary transition-colors">
+              <a href="tel:+91 8553623757" className="flex items-center space-x-1 hover:text-primary transition-colors">
                 <Phone size={16} />
-                <span>8951513146</span>
+                <span>+91 8553623757</span>
               </a>
               <a href="mailto:VisionRubberProduct@Gmail.com" className="flex items-center space-x-1 hover:text-primary transition-colors">
                 <Mail size={16} />

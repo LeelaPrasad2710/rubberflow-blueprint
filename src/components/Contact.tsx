@@ -19,7 +19,7 @@ const Contact = () => {
     
     // WhatsApp integration
     const whatsappMessage = `New Inquiry from Website:\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nMessage: ${formData.message}`;
-    const whatsappUrl = `https://wa.me/918951513146?text=${encodeURIComponent(whatsappMessage)}`;
+    const whatsappUrl = `https://wa.me/91+91 8553623757?text=${encodeURIComponent(whatsappMessage)}`;
     
     window.open(whatsappUrl, '_blank');
     
@@ -123,11 +123,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Phone</h3>
-                    <a href="tel:8951513146" className="text-muted-foreground hover:text-primary transition-colors block">
-                      8951513146
-                    </a>
-                    <a href="tel:9535590771" className="text-muted-foreground hover:text-primary transition-colors block">
-                      9535590771
+                    <a href="tel:+91 8553623757" className="text-muted-foreground hover:text-primary transition-colors block">
+                      +91 8553623757
                     </a>
                   </div>
                 </div>
@@ -178,7 +175,7 @@ const Contact = () => {
                   Chat with us on WhatsApp for instant support
                 </p>
                 <Button variant="default" size="sm" asChild className="w-full">
-                  <a href="https://wa.me/918951513146" target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/91+91 8553623757" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="mr-2" size={16} />
                     Open WhatsApp
                   </a>

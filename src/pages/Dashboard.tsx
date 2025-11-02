@@ -27,7 +27,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 pt-24">
         <section className="py-12 bg-gradient-to-b from-background to-secondary/10">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl font-bold text-foreground mb-8">Dashboard</h1>

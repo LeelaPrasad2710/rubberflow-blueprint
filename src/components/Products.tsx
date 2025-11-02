@@ -35,14 +35,16 @@ const Products = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {products.map((product) => (
             <Card key={product.name} className="group hover:shadow-[var(--shadow-card)] transition-all duration-300 border-border overflow-hidden">
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-48 overflow-hidden bg-white">
                 <img 
                   src={product.image} 
                   alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                  style={{ filter: "none", imageRendering: "auto" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent"></div>
               </div>
+
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                   {product.name}

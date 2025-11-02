@@ -15,7 +15,7 @@ const Footer = () => {
               Our mission: Make India proud by stopping imports with quality local manufacturing.
             </p>
             <div className="flex space-x-4">
-              <a href="tel:8951513146" className="text-primary hover:text-primary-glow transition-colors">
+              <a href="tel:+91 8553623757" className="text-primary hover:text-primary-glow transition-colors">
                 <Phone size={20} />
               </a>
               <a href="mailto:VisionRubberProduct@Gmail.com" className="text-primary hover:text-primary-glow transition-colors">
@@ -55,11 +55,8 @@ const Footer = () => {
               <li className="flex items-start space-x-2">
                 <Phone size={18} className="mt-1 flex-shrink-0" />
                 <div>
-                  <a href="tel:8951513146" className="hover:text-primary transition-colors block">
-                    8951513146
-                  </a>
-                  <a href="tel:9535590771" className="hover:text-primary transition-colors block">
-                    9535590771
+                  <a href="tel:+91 8553623757" className="hover:text-primary transition-colors block">
+                    +91 +91 8553623757
                   </a>
                 </div>
               </li>
