@@ -140,10 +140,10 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Email</h3>
                     <a 
-                      href="mailto:VisionRubberProduct@Gmail.com" 
+                      href="mailto:dhananjayarubberproducts@Gmail.com" 
                       className="text-muted-foreground hover:text-primary transition-colors break-all"
                     >
-                      VisionRubberProduct@Gmail.com
+                      dhananjayarubberproducts@Gmail.com
                     </a>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ const Contact = () => {
                   Chat with us on WhatsApp for instant support
                 </p>
                 <Button variant="default" size="sm" asChild className="w-full">
-                  <a href="https://wa.me/91+91 8553623757" target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/+91 8553623757" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="mr-2" size={16} />
                     Open WhatsApp
                   </a>

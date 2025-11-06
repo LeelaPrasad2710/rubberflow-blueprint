@@ -18,7 +18,7 @@ const Footer = () => {
               <a href="tel:+91 8553623757" className="text-primary hover:text-primary-glow transition-colors">
                 <Phone size={20} />
               </a>
-              <a href="mailto:VisionRubberProduct@Gmail.com" className="text-primary hover:text-primary-glow transition-colors">
+              <a href="mailto:dhananjayarubberproducts@Gmail.com" className="text-primary hover:text-primary-glow transition-colors">
                 <Mail size={20} />
               </a>
             </div>
@@ -56,14 +56,14 @@ const Footer = () => {
                 <Phone size={18} className="mt-1 flex-shrink-0" />
                 <div>
                   <a href="tel:+91 8553623757" className="hover:text-primary transition-colors block">
-                    +91 +91 8553623757
+                     +91 8553623757
                   </a>
                 </div>
               </li>
               <li className="flex items-start space-x-2">
                 <Mail size={18} className="mt-1 flex-shrink-0" />
-                <a href="mailto:VisionRubberProduct@Gmail.com" className="hover:text-primary transition-colors break-all">
-                  VisionRubberProduct@Gmail.com
+                <a href="mailto:dhananjayarubberproducts@Gmail.com" className="hover:text-primary transition-colors break-all">
+                  dhananjayarubberproducts@Gmail.com
                 </a>
               </li>
             </ul>

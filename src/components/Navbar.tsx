@@ -33,7 +33,7 @@ const Navbar = () => {
                 <Phone size={16} />
                 <span>+91 8553623757</span>
               </a>
-              <a href="mailto:VisionRubberProduct@Gmail.com" className="flex items-center space-x-1 hover:text-primary transition-colors">
+              <a href="mailto:dhananjayarubberproducts@Gmail.com" className="flex items-center space-x-1 hover:text-primary transition-colors">
                 <Mail size={16} />
               </a>
             </div>

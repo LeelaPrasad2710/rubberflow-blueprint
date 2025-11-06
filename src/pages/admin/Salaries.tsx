@@ -1,96 +1,149 @@
-import { useState, useMemo } from "react"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { FileDown, Pencil, Save } from "lucide-react"
-import jsPDF from "jspdf"
-import "jspdf-autotable"
+import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { FileDown, Pencil, Save } from "lucide-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
+interface Salary {
+  id: number | null;
+  employeeId: number;
+  employeeName: string;
+  wages: number;
+  month: string;
+  daysPresent: number;
+  otHours: number;
+  misc: number;
+  comments: string;
+  totalSalary: number;
+  editing?: boolean;
+  dirty?: boolean;
+}
 
 const Salaries = () => {
-  // Current month/year
-  const [currentDate] = useState(new Date())
-  const monthYear = currentDate.toLocaleString("default", { month: "long", year: "numeric" })
+  const [salaries, setSalaries] = useState<Salary[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Employee salary data
-  const [salaries, setSalaries] = useState([
-    { name: "Ravi Kumar", basic: 18000, daysPresent: 22, otHours: 5, otRate: 100, editing: false },
-    { name: "Anita Sharma", basic: 20000, daysPresent: 24, otHours: 8, otRate: 120, editing: false },
-    { name: "Kiran Patel", basic: 17500, daysPresent: 20, otHours: 3, otRate: 90, editing: false },
-    { name: "Vijay Rao", basic: 22000, daysPresent: 25, otHours: 4, otRate: 110, editing: false },
-    { name: "Leela Prasad", basic: 19500, daysPresent: 23, otHours: 6, otRate: 100, editing: false },
-  ])
+  useEffect(() => {
+    const fetchSalaries = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/api/salaries/setup?year=2025&month=11");
+        if (!res.ok) throw new Error("Failed to fetch salaries");
+        const rawData = await res.json();
 
-  // Auto calculate total salary
-  const calculateTotal = (emp: any) => {
-    const dailyRate = emp.basic / 26 // assume 26 working days
-    const base = dailyRate * emp.daysPresent
-    const ot = emp.otHours * emp.otRate
-    return Math.round(base + ot)
-  }
+        const normalized = (rawData || []).map((s: any) => ({
+          id: s.id ?? null,
+          employeeId: s.employeeId,
+          employeeName: s.employeeName,
+          wages: s.wages,
+          month: s.month,
+          daysPresent: s.daysPresent ?? 0,
+          otHours: s.otHours ?? 0,
+          misc: s.misc ?? 0,
+          comments: s.comments ?? "",
+          totalSalary: s.totalSalary ?? 0,
+          editing: false,
+          dirty: false,
+        }));
 
-  // Edit toggle
+        setSalaries(normalized);
+      } catch (err) {
+        console.error("❌ Error fetching salaries:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSalaries();
+  }, []);
+
+  // Recalculate total salary
+  const recalculate = (salary: Salary) => {
+    const base = salary.wages * salary.daysPresent;
+    const otAmount = (salary.wages / 8) * salary.otHours;
+    const total = base + otAmount + salary.misc;
+    return Math.round(total);
+  };
+
+  // Handle field change (only for misc/comments)
+  const handleChange = (index: number, field: keyof Salary, value: any) => {
+    if (field === "daysPresent" || field === "otHours") return; // 🚫 prevent editing
+    const updated = [...salaries];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+      totalSalary: recalculate({ ...updated[index], [field]: value }),
+      dirty: true,
+    };
+    setSalaries(updated);
+  };
+
+  // Toggle edit mode (only enables misc/comments fields)
   const toggleEdit = (index: number) => {
-    setSalaries((prev) =>
-      prev.map((emp, i) => (i === index ? { ...emp, editing: !emp.editing } : emp))
-    )
-  }
+    const updated = [...salaries];
+    updated[index].editing = !updated[index].editing;
+    setSalaries(updated);
+  };
 
-  // Handle field change
-  const handleChange = (index: number, field: string, value: any) => {
-    setSalaries((prev) =>
-      prev.map((emp, i) => (i === index ? { ...emp, [field]: value } : emp))
-    )
-  }
+const handleSave = async (index: number) => {
+  const salary = salaries[index];
+  const total = recalculate(salary);
 
-  // Export all data to PDF
+  try {
+    const res = await fetch("http://localhost:4000/api/salaries/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: salary.id,
+        employeeId: salary.employeeId,
+        month: salary.month,
+        daysPresent: salary.daysPresent ?? 0,
+        otHours: salary.otHours ?? 0,
+        misc: Number(salary.misc ?? 0),
+        comments: salary.comments ?? "",
+        totalSalary: total,
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed to save salary");
+    const saved = await res.json();
+
+    const updated = [...salaries];
+    updated[index] = { ...salary, ...saved, editing: false, dirty: false };
+    setSalaries(updated);
+    console.log("✅ Saved successfully:", saved);
+    alert(`✅ Salary for ${salary.employeeName} saved successfully!`);
+  } catch (err) {
+    console.error("❌ Error saving salary:", err);
+    alert("❌ Failed to save salary. Check console for details.");
+  }
+};
+
+
+  // Export PDF
   const exportPDF = () => {
-    const doc = new jsPDF()
-    doc.setFontSize(16)
-    doc.text(`Salary Report - ${monthYear}`, 14, 20)
-
-    const tableData = salaries.map((emp) => [
-      monthYear,
-      emp.name,
-      emp.basic,
-      emp.daysPresent,
-      emp.otHours,
-      emp.otRate,
-      calculateTotal(emp),
-    ])
-
-    ;(doc as any).autoTable({
-      head: [
-        ["Month", "Employee Name", "Basic Wages", "Days Present", "OT Hours", "OT Rate", "Total Salary"],
-      ],
+    const doc = new jsPDF();
+    doc.text("Salary Report", 14, 20);
+    const tableData = salaries.map((s) => [
+      s.month,
+      s.employeeName,
+      s.wages,
+      s.daysPresent,
+      s.otHours,
+      s.misc,
+      s.comments,
+      s.totalSalary,
+    ]);
+    (doc as any).autoTable({
+      head: [["Month", "Employee", "Wages", "Days", "OT Hours", "Misc", "Comments", "Total"]],
       body: tableData,
       startY: 30,
-    })
+    });
+    doc.save("Salary_Report.pdf");
+  };
 
-    doc.save(`Salary_Report_${monthYear}.pdf`)
-  }
-
-  // Placeholder for Generate Salary Slip (per employee)
-  const generateSlip = (emp: any) => {
-    const doc = new jsPDF()
-    doc.setFontSize(14)
-    doc.text(`Salary Slip - ${emp.name}`, 14, 20)
-    doc.text(`Month: ${monthYear}`, 14, 30)
-
-    const total = calculateTotal(emp)
-    ;(doc as any).autoTable({
-      body: [
-        ["Basic Wages", emp.basic],
-        ["Days Present", emp.daysPresent],
-        ["OT Hours", emp.otHours],
-        ["OT Rate (₹/hr)", emp.otRate],
-        ["Total Salary (₹)", total],
-      ],
-      startY: 40,
-      theme: "grid",
-    })
-
-    doc.save(`SalarySlip_${emp.name}_${monthYear}.pdf`)
-  }
+  if (loading) return <div className="text-center mt-10">Loading salaries...</div>;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -98,116 +151,88 @@ const Salaries = () => {
       <main className="flex-1 bg-background text-foreground pt-24">
         <section className="py-10">
           <div className="container mx-auto px-4">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-              <h1 className="text-4xl font-bold text-foreground">Salary Management</h1>
-              <Button variant="default" onClick={exportPDF}>
-                <FileDown className="mr-2 h-4 w-4" /> Export Full Report (PDF)
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-4xl font-bold">Salary Management</h1>
+              <Button onClick={exportPDF}>
+                <FileDown className="mr-2 h-4 w-4" /> Export Report
               </Button>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-border shadow-[var(--shadow-card)]">
-              <table className="min-w-full border-collapse text-sm">
+            <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
+              <table className="min-w-full text-sm">
                 <thead className="bg-secondary text-secondary-foreground">
                   <tr>
-                    <th className="p-3 text-left font-semibold">Month</th>
-                    <th className="p-3 text-left font-semibold">Employee</th>
-                    <th className="p-3 text-center font-semibold">Basic Wages</th>
-                    <th className="p-3 text-center font-semibold">Days Present</th>
-                    <th className="p-3 text-center font-semibold">OT Hours</th>
-                    <th className="p-3 text-center font-semibold">OT ₹/hr</th>
-                    <th className="p-3 text-center font-semibold">Total Salary</th>
-                    <th className="p-3 text-center font-semibold">Save</th>
-                    <th className="p-3 text-center font-semibold">Edit</th>
-                    <th className="p-3 text-center font-semibold">Salary Slip</th>
+                    <th className="p-3 text-left">Month</th>
+                    <th className="p-3 text-left">Employee</th>
+                    <th className="p-3 text-center">Wages (₹)</th>
+                    <th className="p-3 text-center">Days Present</th>
+                    <th className="p-3 text-center">OT Hours</th>
+                    <th className="p-3 text-center">Misc</th>
+                    <th className="p-3 text-center">Comments</th>
+                    <th className="p-3 text-center">Total (₹)</th>
+                    <th className="p-3 text-center">Edit</th>
+                    <th className="p-3 text-center">Save</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {salaries.map((emp, index) => {
-                    const total = calculateTotal(emp)
-                    return (
-                      <tr key={index} className="even:bg-muted/40 hover:bg-primary/10 transition-colors">
-                        <td className="p-3">{monthYear}</td>
-                        <td className="p-3 font-medium">{emp.name}</td>
+                  {salaries.map((s, index) => (
+                    <tr key={s.id ?? index} className="even:bg-muted/40 hover:bg-primary/10 transition">
+                      <td className="p-3">{s.month}</td>
+                      <td className="p-3">{s.employeeName}</td>
+                      <td className="p-3 text-center">{s.wages}</td>
+                      <td className="p-3 text-center">{s.daysPresent}</td>
+                      <td className="p-3 text-center">{s.otHours}</td>
 
-                        <td className="p-2 text-center">
-                          {emp.editing ? (
-                            <input
-                              type="number"
-                              value={emp.basic}
-                              onChange={(e) => handleChange(index, "basic", +e.target.value)}
-                              className="w-20 text-center border rounded bg-background"
-                            />
-                          ) : (
-                            `₹${emp.basic}`
-                          )}
-                        </td>
+                      <td className="p-3 text-center">
+                        {s.editing ? (
+                          <input
+                            type="number"
+                            value={s.misc}
+                            onChange={(e) =>
+                              handleChange(index, "misc", Number(e.target.value))
+                            }
+                            className="w-16 text-center border rounded"
+                          />
+                        ) : (
+                          s.misc
+                        )}
+                      </td>
 
-                        <td className="p-2 text-center">
-                          {emp.editing ? (
-                            <input
-                              type="number"
-                              value={emp.daysPresent}
-                              onChange={(e) => handleChange(index, "daysPresent", +e.target.value)}
-                              className="w-16 text-center border rounded bg-background"
-                            />
-                          ) : (
-                            emp.daysPresent
-                          )}
-                        </td>
+                      <td className="p-3 text-center">
+                        {s.editing ? (
+                          <input
+                            type="text"
+                            value={s.comments}
+                            onChange={(e) => handleChange(index, "comments", e.target.value)}
+                            className="w-40 text-center border rounded"
+                          />
+                        ) : (
+                          s.comments
+                        )}
+                      </td>
 
-                        <td className="p-2 text-center">
-                          {emp.editing ? (
-                            <input
-                              type="number"
-                              value={emp.otHours}
-                              onChange={(e) => handleChange(index, "otHours", +e.target.value)}
-                              className="w-16 text-center border rounded bg-background"
-                            />
-                          ) : (
-                            emp.otHours
-                          )}
-                        </td>
+                      <td className="p-3 text-center font-semibold text-primary">
+                        ₹{s.totalSalary.toLocaleString("en-IN")}
+                      </td>
 
-                        <td className="p-2 text-center">
-                          {emp.editing ? (
-                            <input
-                              type="number"
-                              value={emp.otRate}
-                              onChange={(e) => handleChange(index, "otRate", +e.target.value)}
-                              className="w-16 text-center border rounded bg-background"
-                            />
-                          ) : (
-                            `₹${emp.otRate}`
-                          )}
-                        </td>
+                      <td className="p-3 text-center">
+                        <Button variant="secondary" size="sm" onClick={() => toggleEdit(index)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </td>
 
-                        <td className="p-2 text-center font-semibold text-primary">
-                          ₹{total.toLocaleString("en-IN")}
-                        </td>
-
-                        <td className="p-2 text-center">
-                          <Button variant="secondary" size="sm" onClick={() => toggleEdit(index)}>
-                            <Save className="h-4 w-4" />
-                          </Button>
-                        </td>
-
-                        <td className="p-2 text-center">
-                          <Button variant="secondary" size="sm" onClick={() => toggleEdit(index)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </td>
-
-                        <td className="p-2 text-center">
-                          <Button variant="default" size="sm" onClick={() => generateSlip(emp)}>
-                            Slip
-                          </Button>
-                        </td>
-                      </tr>
-                    )
-                  })}
+                      <td className="p-3 text-center">
+                        <Button
+                          variant={s.dirty ? "default" : "secondary"}
+                          size="sm"
+                          disabled={!s.dirty}
+                          onClick={() => handleSave(index)}
+                        >
+                          <Save className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -216,7 +241,7 @@ const Salaries = () => {
       </main>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Salaries
+export default Salaries;

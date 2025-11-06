@@ -12,6 +12,7 @@ import InProgress from "./pages/InProgress";
 import NotFound from "./pages/NotFound";
 import Attendance from "@/pages/admin/Attendance"
 import Salaries from "@/pages/admin/Salaries"
+import Employees from "@/pages/admin/Employees"
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,8 @@ const App = () => (
           <Route path="/admin/invoices" element={<InProgress />} />
           <Route path="/admin/production" element={<InProgress />} />
           <Route path="/admin/rawMaterial" element={<InProgress />} />
+          <Route path="/admin/supplychain" element={<InProgress />} />
+          <Route path="/admin/employees" element={<Employees />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

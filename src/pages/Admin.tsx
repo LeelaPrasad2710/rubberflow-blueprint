@@ -1,4 +1,4 @@
-import { ClipboardList, DollarSign, FileText, Factory } from "lucide-react";
+import { ClipboardList, DollarSign, FileText, Factory, UserCog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -39,6 +39,18 @@ const Admin = () => {
       icon: Factory,
       path: "/admin/rawMaterials",
     },
+    {
+      title: "Supply Chain",
+      description: "Monitor stock outflow and deliveries",
+      icon: Factory,
+      path: "/admin/supplychain",
+    },
+    {
+      title: "Employee Management",
+      description: "Add, edit, or delete employee details",
+      icon: UserCog,
+      path: "/admin/employees",
+    },
   ];
 
   return (
@@ -48,13 +60,18 @@ const Admin = () => {
         <section className="py-12 bg-gradient-to-b from-background to-secondary/10">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl font-bold text-foreground mb-4">Admin Panel</h1>
-            <p className="text-muted-foreground mb-8">Manage your business operations from one central location</p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <p className="text-muted-foreground mb-8">
+              Manage your business operations from one central location
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {adminModules.map((module, index) => {
                 const Icon = module.icon;
                 return (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={index}
+                    className="hover:shadow-[var(--shadow-card)] hover:scale-[1.02] transition-all duration-300"
+                  >
                     <CardHeader>
                       <div className="flex items-center gap-4">
                         <div className="p-3 bg-primary/10 rounded-lg">
@@ -67,8 +84,8 @@ const Admin = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        variant="default" 
+                      <Button
+                        variant="default"
                         className="w-full"
                         onClick={() => navigate(module.path)}
                       >
